@@ -36,7 +36,7 @@ function backupSettings($settingsPrefix, $filePath) {
 
     // Salva i dati in formato JSON
     if (file_put_contents($filePath, json_encode($settings))) {
-        return "Backup completato con successo! File salvato in: assets/backup/{$fileName}";
+        return "Backup completato con successo! File salvato in: {$filePath}";
     } else {
         return "Errore durante il backup!";
     }
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Verifica se esiste un file di backup e crea un messaggio e link di download
 $backupExists = file_exists($filePath);
-$backupMessage = $backupExists ? "<p>File di backup trovato: <a href='" . MODX_SITE_URL . "assets/backup/{$fileName}' download>Scarica il file di backup</a></p>" : "<p>Nessun file di backup trovato.</p>";
+$backupMessage = $backupExists ? "<p>File di backup trovato: <a href='" . MODX_SITE_URL . "{$backupPath}{$fileName}' download>Scarica il file di backup</a></p>" : "<p>Nessun file di backup trovato.</p>";
 
 // Inizializza l'output HTML
 $html = '
