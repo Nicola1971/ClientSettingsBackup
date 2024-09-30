@@ -119,8 +119,8 @@ $html = '
 
     <!-- Form with buttons for Backup and Restore -->
     <form method="post">
-        <button type="submit" class="btn btn-success" name="action" value="backup"><i class="fa fa-download" aria-hidden="true"></i> Esegui Backup</button>
-        <button type="submit" class="btn btn-warning" name="action" value="restore"><i class="fa fa-refresh" aria-hidden="true"></i> Esegui Restore</button>
+        <button type="submit" class="btn btn-success" name="action" value="backup"><i class="fa fa-download" aria-hidden="true"></i> Backup Settings</button>
+        <button type="submit" class="btn btn-warning" name="action" value="restore"><i class="fa fa-refresh" aria-hidden="true"></i> Restore Settings</button>
     </form>
 	</div>
 </div>
