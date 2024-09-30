@@ -7,12 +7,12 @@
  * @version     1.0
  * @author      Author: Nicola Lambathakis http://www.tattoocms.it/
  * @internal	@modx_category Manager
- * @internal    @properties &settingsPrefix= Settings Prefix:;string;client_ &backupPath= Backup Path:;string;assets/backup/
+ * @internal    @properties &settingsPrefix= Settings Prefix:;string;client_ &backupPath= Backup Path:;string;assets/files/
  */
 header('Content-Type: text/html; charset=UTF-8');
 
 $settingsPrefix = isset($settingsPrefix) ? $settingsPrefix : 'client_';
-$backupPath = isset($backupPath) ? $backupPath : 'assets/backup/';
+$backupPath = isset($backupPath) ? $backupPath : 'assets/files/';
 $backupDir = MODX_BASE_PATH . $backupPath;
 $fileName = 'backup_settings.json';
 $filePath = $backupDir . $fileName;
