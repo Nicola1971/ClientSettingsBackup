@@ -17,7 +17,7 @@ $backupDir = MODX_BASE_PATH . $backupPath;
 $fileName = 'backup_settings.json';
 $filePath = $backupDir . $fileName;
 
-// Funzione per il backup
+// Backup function
 function backupSettings($settingsPrefix, $filePath) {
     global $modx;
     $tablePrefix = $modx->db->config['table_prefix'];
@@ -29,30 +29,30 @@ function backupSettings($settingsPrefix, $filePath) {
         $settings[] = $row;
     }
 
-    // Crea la cartella se non esiste
+    // Create the folder if it doesn't exist
     if (!is_dir(dirname($filePath))) {
         mkdir(dirname($filePath), 0755, true);
     }
 
-    // Salva i dati in formato JSON
+    // Save data in JSON format
     if (file_put_contents($filePath, json_encode($settings))) {
-        return "Backup completato con successo! File salvato in: {$filePath}";
+        return "<div class=\"alert alert-success\">Backup completed successfully! File saved in: {$filePath}</div>";
     } else {
-        return "Errore durante il backup!";
+        return "<div class=\"alert alert-danger\">Error during backup!</div>";
     }
 }
 
-// Funzione per il restore
+// Restore function
 function restoreSettings($filePath) {
     global $modx;
     if (!file_exists($filePath)) {
-        return "File di backup non trovato!";
+        return "Backup file not found!";
     }
 
     $jsonData = file_get_contents($filePath);
     $settings = json_decode($jsonData, true);
     if (empty($settings)) {
-        return "Nessun dato trovato nel file o errore nel file JSON!";
+        return "<div class=\"alert alert-warning\">No data found in the file or error in the JSON file!</div>";
     }
 
     $tablePrefix = $modx->db->config['table_prefix'];
@@ -68,14 +68,14 @@ function restoreSettings($filePath) {
             $modx->db->query($insertQuery);
         }
 
-        return "Ripristino completato con successo!";
+        return "<div class=\"alert alert-success\">Restore completed successfully!/div>";
 		$modx->invokeEvent('OnClientSettingsSave', array('prefix' => $settingsPrefix, 'settings' => $settings));
     } else {
-        return "Errore durante l'eliminazione delle vecchie impostazioni.";
+        return "<div class=\"alert alert-danger\">Error while deleting old settings.</div>";
     }
 }
 
-// Gestione azioni
+// Action handling
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = isset($_POST['action']) ? $_POST['action'] : '';
     if ($action == 'backup') {
@@ -84,41 +84,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = restoreSettings($filePath);
 		$modx->clearCache('full');
     } else {
-        $message = "Azione non valida!";
+        $message = "Invalid action!";
     }
 } else {
     $message = '';
 }
 
-// Verifica se esiste un file di backup e crea un messaggio e link di download
+// Check if a backup file exists and create a message and download link
 $backupExists = file_exists($filePath);
-$backupMessage = $backupExists ? "<p>File di backup trovato: <a href='" . MODX_SITE_URL . "{$backupPath}{$fileName}' download>Scarica il file di backup</a></p>" : "<p>Nessun file di backup trovato.</p>";
+$backupMessage = $backupExists ? "<div class=\"alert alert-info\">Backup file found: <a href='" . MODX_SITE_URL . "{$backupPath}{$fileName}' download>Download backup file</a></div>" : "<div class=\"alert alert-warning\">No backup file found.</div>";
 
-// Inizializza l'output HTML
+// Initialize HTML output
 $html = '
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Backup e Restore delle Impostazioni</title>
+    <title>Settings Backup and Restore</title>
+	<link type="text/css" rel="stylesheet" href="media/style/' . $modx->config['manager_theme'] . '/style.css">
+	<script src="media/script/tabpane.js"></script>
 </head>
 <body>
-    <h1>Gestione Backup e Restore</h1>
+<div class="tab-pane" id="settingsbackupPanes">
+    <h1>Settings Backup & Restore</h1>
+<div class="tab-page" id="tabsettingsbackup">
 
-    <!-- Mostra il messaggio di risultato, se presente -->
+<h2 class="tab"><a href="#tabpanel-evobackup"><span><i class="fa fa-cog" aria-hidden="true"></i> ClientSettings Backup & Restore</span></a></h2>
+
+<div class="container">
     '. (!empty($message) ? "<p><strong>$message</strong></p>" : '') .'
 
-    <!-- Mostra la presenza di un file di backup -->
+    <!-- Show the presence of a backup file -->
     ' . $backupMessage . '
 
-    <!-- Form con i pulsanti per Backup e Restore -->
+    <!-- Form with buttons for Backup and Restore -->
     <form method="post">
-        <button type="submit" name="action" value="backup">Esegui Backup</button>
-        <button type="submit" name="action" value="restore">Esegui Restore</button>
+        <button type="submit" class="btn btn-success" name="action" value="backup"><i class="fa fa-download" aria-hidden="true"></i> Esegui Backup</button>
+        <button type="submit" class="btn btn-warning" name="action" value="restore"><i class="fa fa-refresh" aria-hidden="true"></i> Esegui Restore</button>
     </form>
+	</div>
+</div>
+</div>
 </body>
 </html>
 ';
 
-// Visualizza l'output HTML
+// Display HTML output
 echo $html;
