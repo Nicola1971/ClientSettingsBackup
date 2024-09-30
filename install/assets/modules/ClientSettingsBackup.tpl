@@ -68,9 +68,8 @@ function restoreSettings($filePath) {
             $modx->db->query($insertQuery);
         }
 
-        $modx->invokeEvent('OnClientSettingsSave', array('prefix' => $settingsPrefix, 'settings' => $settings));
-
         return "Ripristino completato con successo!";
+		$modx->invokeEvent('OnClientSettingsSave', array('prefix' => $settingsPrefix, 'settings' => $settings));
     } else {
         return "Errore durante l'eliminazione delle vecchie impostazioni.";
     }
@@ -83,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = backupSettings($settingsPrefix, $filePath);
     } elseif ($action == 'restore') {
         $message = restoreSettings($filePath);
+		$modx->clearCache('full');
     } else {
         $message = "Azione non valida!";
     }
