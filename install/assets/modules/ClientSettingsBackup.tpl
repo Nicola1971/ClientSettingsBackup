@@ -109,7 +109,7 @@ $html = '
     <h1>Settings Backup & Restore</h1>
 <div class="tab-page" id="tabsettingsbackup">
 
-<h2 class="tab"><a href="#tabpanel-evobackup"><span><i class="fa fa-cog" aria-hidden="true"></i> ClientSettings Backup & Restore</span></a></h2>
+<h2 class="tab"><a href="#tabpanel-settingsbackup"><span><i class="fa fa-cog" aria-hidden="true"></i> ClientSettings Backup & Restore</span></a></h2>
 
 <div class="container">
     '. (!empty($message) ? "<p><strong>$message</strong></p>" : '') .'
