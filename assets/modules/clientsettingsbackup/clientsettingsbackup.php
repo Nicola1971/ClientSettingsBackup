@@ -140,7 +140,7 @@ $html = '
 <!DOCTYPE html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset='.$modx_manager_charset.'" />
-    <title>BS4 Backup e Restore</title>
+    <title>' . $moduleName . '</title>
     <link type="text/css" rel="stylesheet" href="media/style/' . $modx->config['manager_theme'] . '/style.css">
     <script src="media/script/tabpane.js"></script>
 </head>
