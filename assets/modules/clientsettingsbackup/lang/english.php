@@ -22,7 +22,6 @@
 
 $_lang['bkp_Completed'] = 'Backup completed successfully! File saved in';
 $_lang["bkp_Error"] = 'Error during backup!';
-$_lang['bkp_NotFound'] = 'Backup file not found!';
 $_lang['bkp_NoData'] = 'No data found in file or error in JSON file!';
 $_lang['restore_Completed'] = 'Restore completed successfully!';
 $_lang['restore_Error'] = 'Error deleting old settings!';
@@ -33,7 +32,8 @@ $_lang['delete_Error'] = 'Error clearing settings';
 
 $_lang['bkp_FileFound:'] = 'Backup file found:';
 $_lang['bkp_Download'] = 'Download the backup file';
-$_lang['bkp_NotFound'] = 'Download the backup file';
+$_lang['bkp_Date'] = 'Backup date';
+$_lang['bkp_NotFound'] = 'Backup file Not found';
 
 $_lang['Backup_Settings'] = 'Backup Settings';
 $_lang['Upload_Restore_File'] = 'Upload Restore File';
@@ -44,3 +44,4 @@ $_lang['Restore_Confirm'] = 'Are you sure you want to reset settings? This actio
 
 $_lang['Delete_Settings'] = 'Delete Settings';
 $_lang['Delete_Confirm'] = 'Are you sure you want to delete all settings with this prefix? This action is irreversible!';
+$_lang['close'] = 'Close';

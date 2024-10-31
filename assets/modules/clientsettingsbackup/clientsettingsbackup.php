@@ -7,6 +7,8 @@ $module_id = (!empty($_REQUEST["id"])) ? (int)$_REQUEST["id"] : $yourModuleId;
 
 // Impostazioni di default
 $settingsPrefix = isset($settingsPrefix) ? $settingsPrefix : 'client_';
+$moduleName = isset($moduleName) ? $moduleName : 'ClientSettings Backup and Restore';
+$dateFormat = isset($dateFormat) ? $dateFormat : 'd-m-Y H:i:s';
 $backupPath = isset($backupPath) ? $backupPath : 'assets/files/';
 $backupDir = MODX_BASE_PATH . $backupPath;
 $fileName = 'backup_settings.json';
@@ -133,7 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Verifica presenza file di backup e messaggio download
 $backupExists = file_exists($filePath);
-$backupMessage = $backupExists ? "<div class=\"alert alert-info\">"  .$_lang['bkp_FileFound'] . " <a class=\"btn btn-success\" href='" . MODX_SITE_URL . "{$backupPath}{$fileName}' download>" . $_lang['bkp_Download'] . "</a></div>" : "<div class=\"alert alert-warning\">"  .$_lang['bkp_NotFound'] . "</div>";
+if ($backupExists) {
+    $fileModTime = date($dateFormat, filemtime($filePath)); // Formatta la data di modifica
+    $backupMessage = "<div class=\"alert alert-info\"><i class=\"fa fa-thumbs-up\" aria-hidden=\"true\"></i>  " . $_lang['bkp_FileFound'] . " <a class=\"btn btn-success\" href='" . MODX_SITE_URL . "{$backupPath}{$fileName}' download>" . $_lang['bkp_Download'] . "</a><hr/><p><i class=\"fa fa-calendar\" aria-hidden=\"true\"></i>  " . $_lang['bkp_Date'] . ": $fileModTime</p></div>";
+} else {
+    $backupMessage = "<div class=\"alert alert-warning\"><i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i>  " . $_lang['bkp_NotFound'] . "</div>";
+}
 
 // HTML output
 $html = '
@@ -172,6 +179,7 @@ $html = '
     <h2 class="tab"><a href="#tabpanel-settingbackup"><span><i class="fa fa-download" aria-hidden="true"></i> ' .$_lang['Backup_Settings']. '</span></a></h2>
     <div class="container">
         <h3><i class="fa fa-download" aria-hidden="true"></i>  ' .$_lang['Backup_Settings']. '</h3>
+        <hr/>
         '. (!empty($Bmessage) ? "<p><strong>$Bmessage</strong></p>" : '') .'
         <form method="post">
             <button type="submit" class="btn btn-success" name="action" value="backup">
@@ -186,6 +194,7 @@ $html = '
     <h2 class="tab"><a href="#tabpanel-settingupload"><span><i class="fa fa-upload" aria-hidden="true"></i> '.$_lang['Upload_Restore_File'].'</span></a></h2>
     <div class="container">
         <h3><i class="fa fa-upload" aria-hidden="true"></i> '.$_lang['Upload_Restore_File'].'</h3>
+        <hr/>
         '. (!empty($uploadMessage) ? "<p><strong>$uploadMessage</strong></p>" : '') .'
         <form id="uploadForm" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="upload">
@@ -202,6 +211,7 @@ $html = '
     <h2 class="tab"><a href="#tabpanel-settingrestore"><span><i class="fa fa-refresh" aria-hidden="true"></i> '.$_lang['Restore_Settings'].'</span></a></h2>
     <div class="container">
         <h3><i class="fa fa-refresh" aria-hidden="true"></i> '.$_lang['Restore_Settings'].'</h3>
+        <hr/>
         '. (!empty($Rmessage) ? "<p><strong>$Rmessage</strong></p>" : '') .'
         <form id="restoreForm" method="post" onsubmit="return confirm(\''.$_lang['Restore_Confirm'].'\');">
             <input type="hidden" name="action" value="restore">
@@ -217,6 +227,7 @@ $html = '
     <h2 class="tab"><a href="#tabpanel-settingdelete"><span><i class="fa fa-eraser" aria-hidden="true"></i> '.$_lang['Delete_Settings'].'</span></a></h2>
     <div class="container">
         <h3><i class="fa fa-eraser" aria-hidden="true"></i> '.$_lang['Delete_Settings'].'</h3>
+        <hr/>
         '. (!empty($Dmessage) ? "<p><strong>$Dmessage</strong></p>" : '') .'
         <form id="deleteForm" method="post" onsubmit="return confirm(\''.$_lang['Delete_Confirm'].'\');">
             <input type="hidden" name="action" value="delete">

@@ -22,7 +22,6 @@
 
 $_lang['bkp_Completed'] = 'Backup completato con successo! File salvato in';
 $_lang["bkp_Error"] = 'Errore durante il backup!';
-$_lang['bkp_NotFound'] = 'File di backup non trovato!';
 $_lang['bkp_NoData'] = 'Nessun dato trovato nel file o errore nel file JSON!';
 $_lang['restore_Completed'] = 'Ripristino completato con successo!';
 $_lang['restore_Error'] = 'Errore durante l\'eliminazione delle vecchie impostazioni!';
@@ -33,7 +32,8 @@ $_lang['delete_Error'] = 'Errore durante l\'eliminazione delle impostazioni';
 
 $_lang['bkp_FileFound'] = 'File di backup trovato:';
 $_lang['bkp_Download'] = 'Scarica il file di backup';
-$_lang['bkp_NotFound'] = 'File di backup non trovato';
+$_lang['bkp_Date'] = 'Data del backup';
+$_lang['bkp_NotFound'] = 'File di backup non trovato!';
 
 $_lang['Backup_Settings'] = 'Backup Impostazioni';
 $_lang['Upload_Restore_File'] = 'Carica il File di Ripristino';
@@ -44,3 +44,5 @@ $_lang['Restore_Confirm'] = 'Sei sicuro di voler ripristinare le impostazioni? Q
 
 $_lang['Delete_Settings'] = 'Elimina Impostazioni';
 $_lang['Delete_Confirm'] = 'Sei sicuro di voler eliminare tutte le impostazioni con questo prefisso? Questa azione è irreversibile!';
+
+$_lang['close'] = 'Chiudi';
