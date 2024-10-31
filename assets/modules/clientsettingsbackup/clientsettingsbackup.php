@@ -1,5 +1,7 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
+session_start();
+$csrfToken = csrf_token();
+
 global $_lang, $manager_language, $manager_theme,$modx_manager_charset;
 $help = $_lang['help'];
 $Config = $_lang["settings_module"];
@@ -29,7 +31,7 @@ if (file_exists($mods_path.'clientsettingsbackup/lang/' . $modx->config['manager
 }
 
 // Funzione per il backup
-function backupSettings($settingsPrefix, $filePath) {
+function backupClSettings($settingsPrefix, $filePath) {
     global $modx;
     global $_lang;
     $tablePrefix = $modx->db->config['table_prefix'];
@@ -53,7 +55,7 @@ function backupSettings($settingsPrefix, $filePath) {
 }
 
 // Funzione per il ripristino
-function restoreSettings($filePath) {
+function restoreClSettings($filePath) {
     global $modx;
     global $_lang;
     if (!file_exists($filePath)) {
@@ -86,7 +88,7 @@ function restoreSettings($filePath) {
 }
 
 // Funzione per gestire l'upload del file di ripristino
-function handleFileUpload($filePath) {
+function handleClFileUpload($filePath) {
     global $_lang;
     if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
         $uploadedFile = $_FILES['backup_file']['tmp_name'];
@@ -101,7 +103,7 @@ function handleFileUpload($filePath) {
 }
 
 // Funzione per la cancellazione delle impostazioni
-function deleteSettings($settingsPrefix) {
+function deleteClSettings($settingsPrefix) {
     global $modx;
     global $_lang;
     $tablePrefix = $modx->db->config['table_prefix'];
@@ -118,21 +120,26 @@ function deleteSettings($settingsPrefix) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = isset($_POST['action']) ? $_POST['action'] : '';
     if ($action == 'backup') {
-        $Bmessage = backupSettings($settingsPrefix, $filePath);
+        $Bmessage = backupClSettings($settingsPrefix, $filePath);
     } elseif ($action == 'upload') {
-        $uploadMessage = handleFileUpload($filePath);
+        $uploadMessage = handleClFileUpload($filePath);
     } elseif ($action == 'restore') {
-        $Rmessage = restoreSettings($filePath);
+        $Rmessage = restoreClSettings($filePath);
         $modx->clearCache('full');
-        header("Location: " . $_SERVER['REQUEST_URI']);
+        $_SESSION['Rmessage'] = $Rmessage; // Salva il messaggio in sessione
+    header("Location: " . $_SERVER['REQUEST_URI']);
         exit;
     } elseif ($action == 'delete') {
-        $Dmessage = deleteSettings($settingsPrefix);
+        $Dmessage = deleteClSettings($settingsPrefix);
     } else {
         $Dmessage = "Azione non valida!";
     }
 }
-
+// Recupera messaggi dalla sessione
+if (isset($_SESSION['Rmessage'])) {
+    $Rmessage = $_SESSION['Rmessage'];
+    unset($_SESSION['Rmessage']); // Rimuove il messaggio dalla sessione dopo l'uso
+}
 // Verifica presenza file di backup e messaggio download
 $backupExists = file_exists($filePath);
 if ($backupExists) {
@@ -144,12 +151,12 @@ if ($backupExists) {
 
 // HTML output
 $html = '
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset='.$modx_manager_charset.'" />
     <title>' . $moduleName . '</title>
     <link type="text/css" rel="stylesheet" href="media/style/' . $modx->config['manager_theme'] . '/style.css">
-    <script src="media/script/tabpane.js"></script>
+    <script type="text/javascript" src="media/script/tabpane.js"></script>
 </head>
 <body>
 <div class="sectionBody">
@@ -170,18 +177,20 @@ $html = '
     </ul>
 </div>
 <div class="tab-pane" id="settingsbackupPanes">
-   <script type="text/javascript">
-        tpResources = new WebFXTabPane(document.getElementById("settingsbackupPanes"), true);
+    <script type="text/javascript">
+      tpResources = new WebFXTabPane(document.getElementById("settingsbackupPanes"));
     </script>
 
 <!-- Tab per il Backup -->
 <div class="tab-page" id="tabbackup">
-    <h2 class="tab"><a href="#tabpanel-settingbackup"><span><i class="fa fa-download" aria-hidden="true"></i> ' .$_lang['Backup_Settings']. '</span></a></h2>
+    <h2 class="tab"><span><i class="fa fa-download" aria-hidden="true"></i> ' .$_lang['Backup_Settings']. '</span></h2>
+    <script type="text/javascript">tpResources.addTabPage(document.getElementById("tabbackup"));</script>
     <div class="container">
         <h3><i class="fa fa-download" aria-hidden="true"></i>  ' .$_lang['Backup_Settings']. '</h3>
         <hr/>
         '. (!empty($Bmessage) ? "<p><strong>$Bmessage</strong></p>" : '') .'
         <form method="post">
+        <input type="hidden" name="_token" value="' . $csrfToken . '">
             <button type="submit" class="btn btn-success" name="action" value="backup">
                 <i class="fa fa-download" aria-hidden="true"></i>  ' .$_lang['Backup_Settings']. '
             </button>
@@ -191,12 +200,14 @@ $html = '
 
 <!-- Tab per il caricamento del file di Restore -->
 <div class="tab-page" id="tabupload">
-    <h2 class="tab"><a href="#tabpanel-settingupload"><span><i class="fa fa-upload" aria-hidden="true"></i> '.$_lang['Upload_Restore_File'].'</span></a></h2>
+    <h2 class="tab"><span><i class="fa fa-upload" aria-hidden="true"></i> '.$_lang['Upload_Restore_File'].'</span></h2>
+    <script type="text/javascript">tpResources.addTabPage(document.getElementById("tabupload"));</script>
     <div class="container">
         <h3><i class="fa fa-upload" aria-hidden="true"></i> '.$_lang['Upload_Restore_File'].'</h3>
         <hr/>
         '. (!empty($uploadMessage) ? "<p><strong>$uploadMessage</strong></p>" : '') .'
         <form id="uploadForm" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="' . $csrfToken . '">
             <input type="hidden" name="action" value="upload">
             <input type="file" name="backup_file" accept=".json" class="form-control mb-2">
             <button type="submit" class="btn btn-primary">
@@ -208,12 +219,14 @@ $html = '
 
 <!-- Tab per il Restore -->
 <div class="tab-page" id="tabrestore">
-    <h2 class="tab"><a href="#tabpanel-settingrestore"><span><i class="fa fa-refresh" aria-hidden="true"></i> '.$_lang['Restore_Settings'].'</span></a></h2>
+    <h2 class="tab"><span><i class="fa fa-refresh" aria-hidden="true"></i> '.$_lang['Restore_Settings'].'</span></h2>
+    <script type="text/javascript">tpResources.addTabPage(document.getElementById("tabrestore"));</script>
     <div class="container">
         <h3><i class="fa fa-refresh" aria-hidden="true"></i> '.$_lang['Restore_Settings'].'</h3>
         <hr/>
         '. (!empty($Rmessage) ? "<p><strong>$Rmessage</strong></p>" : '') .'
         <form id="restoreForm" method="post" onsubmit="return confirm(\''.$_lang['Restore_Confirm'].'\');">
+        <input type="hidden" name="_token" value="' . $csrfToken . '">
             <input type="hidden" name="action" value="restore">
             <button type="submit" class="btn btn-warning">
                 <i class="fa fa-refresh" aria-hidden="true"></i> '.$_lang['Restore_Settings'].'
@@ -224,12 +237,14 @@ $html = '
 
 <!-- Tab per la Cancellazione -->
 <div class="tab-page" id="tabdelete">
-    <h2 class="tab"><a href="#tabpanel-settingdelete"><span><i class="fa fa-eraser" aria-hidden="true"></i> '.$_lang['Delete_Settings'].'</span></a></h2>
+    <h2 class="tab"><span><i class="fa fa-eraser" aria-hidden="true"></i> '.$_lang['Delete_Settings'].'</span></h2>
+    <script type="text/javascript">tpResources.addTabPage(document.getElementById("tabdelete"));</script>
     <div class="container">
         <h3><i class="fa fa-eraser" aria-hidden="true"></i> '.$_lang['Delete_Settings'].'</h3>
         <hr/>
         '. (!empty($Dmessage) ? "<p><strong>$Dmessage</strong></p>" : '') .'
         <form id="deleteForm" method="post" onsubmit="return confirm(\''.$_lang['Delete_Confirm'].'\');">
+        <input type="hidden" name="_token" value="' . $csrfToken . '">
             <input type="hidden" name="action" value="delete">
             <button type="submit" class="btn btn-danger">
                 <i class="fa fa-eraser" aria-hidden="true"></i> '.$_lang['Delete_Settings'].'
