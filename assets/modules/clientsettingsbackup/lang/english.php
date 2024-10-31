@@ -30,7 +30,7 @@ $_lang['upload_Error'] = 'Error uploading file!';
 $_lang['delete_Completed'] = 'Deletion completed successfully!';
 $_lang['delete_Error'] = 'Error clearing settings';
 
-$_lang['bkp_FileFound:'] = 'Backup file found:';
+$_lang['bkp_FileFound'] = 'Backup file found:';
 $_lang['bkp_Download'] = 'Download the backup file';
 $_lang['bkp_Date'] = 'Backup date';
 $_lang['bkp_NotFound'] = 'Backup file Not found';
